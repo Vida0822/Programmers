@@ -1,5 +1,9 @@
 import java.util.* ; 
 class Solution {
+    
+    /*
+    1. bfs 를 활용한 풀이 
+    */
     static boolean[] visited = new boolean[300] ; 
     static Queue<Integer> q = new LinkedList<Integer>() ; 
     public static int n ; 
@@ -15,13 +19,19 @@ class Solution {
         q.add(0) ; 
         visited[0] = true ;
         networks ++ ; 
+        
+        // 0번 컴퓨터와 한 네트워크에 연결된 컴퓨터들을 순회한다  
         bfs() ; 
           
+        // 0번 컴퓨터 네트워크에 대한 검사를 마친후, 방문하지 않은 컴퓨터들이 있는지 하나씩 검사한다
         for(int i = 0 ; i < n ; i++){ //  visited.length -- IndexOutofRange : 300 으로 잡아놔서 
+            
+            // 만약 방문하지 않은 컴퓨터가 있다면 별개의 네트워크! 
             if(!visited[i]){
-                networks ++ ; 
-                
+                networks ++ ; // 네트워크 갯수 추가     
                 visited[i] = true ; 
+               
+                // 해당 컴퓨터를 기준으로 연결된 컴퓨터들을 순회한다  
                 q.add(i) ; // 여기에 164 들어가면 computers에서 걸림 ! 
                 bfs() ; 
             }
