@@ -19,25 +19,25 @@ class Pair implements Comparable<Pair>{
 
 class Solution {
     public static int n , m ; 
-    public static int[][] dp ; 
     
     public int solution(int[][] maps) {
         n = maps.length ; 
         m = maps[0].length ; 
         
-        dp = new int[n][m] ; 
-        for(int i = 0 ; i < dp.length ; i++){
-            Arrays.fill(dp[i], 10000) ; 
-        }
+        if(n != 1 && m != 1 && maps[n-2][m-1] == 0 && maps[n-1][m-2] == 0)
+            return -1 ;
+        
         // 최단거리 --> bfs 
         return bfs(maps, new Pair(0,0,1)) ; 
     }
     
     public static int bfs(int[][] maps, Pair start){
         
-        if(n != 1 && m != 1 && maps[n-2][m-1] == 0 && maps[n-1][m-2] == 0)
-            return -1 ;
-            
+        int[][] dp = new int[n][m] ; 
+        for(int i = 0 ; i < dp.length ; i++){
+            Arrays.fill(dp[i], 10000) ; 
+        }
+        
         int[] dx = {-1, 1, 0, 0} ; 
         int[] dy = {0, 0, -1, 1} ; 
         
