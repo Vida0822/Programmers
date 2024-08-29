@@ -44,7 +44,6 @@ def solution(words, queries):
             min_index = min_search(backward_words[len(query)], query[::-1]) 
             max_index = max_search(backward_words[len(query)], query[::-1])
         answer.append(max_index - min_index) 
-        
     return answer
 
 def min_search(words, query) : 
