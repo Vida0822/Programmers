@@ -10,7 +10,7 @@ class Main  {
         System.out.println(canUse(N)? "LUCKY":"READY") ; 
     }
     
-    public static boolean canUse(String N){ // N < 99,999,999 --> O(N^2) 미만 
+    public static boolean canUse(String N){ // N < 99,999,999 --> O(N^2) 미만 = O(N)
 
         int len = N.length() ; 
         
@@ -18,6 +18,8 @@ class Main  {
         for(int i = 0 ; i < len/2 ; i++){
             sumA += Integer.parseInt(N.substring(i,i+1)) ; 
             sumB += Integer.parseInt(N.substring(i+len/2,i+len/2+1)) ; 
+            // sumB -= Integer.parseInt(N.substring(i+len/2, i+len/2+1))
+            // sumB -= N.charAt(i+len/2)-'0' ; 
         }
         if(sumA==sumB)
             return true ; 
