@@ -1,96 +1,119 @@
-import java.util.*;
+import java.util.* ; 
+import java.io.* ;
 
-public class Main {
-    public static int n, m, result = 0;
-    
-     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        n = sc.nextInt();
-        m = sc.nextInt();
+class Main{
+    public static int N, M; 
+    public static int max = 0; 
+
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); 
+        int[] input = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray() ;
+        N = input[0] ; // < 8
+        M = input[1] ;
         
-        // 연구소 만들기 
-        int[][] lab = new int[n][m] ; 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                lab[i][j] = sc.nextInt();
+        int[][] lab = new int[N][M] ; 
+        for(int i = 0 ; i < N ; i++){
+            input = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray() ;
+            for(int j = 0 ; j < M ; j++){
+                lab[i][j] = input[j] ; 
             }
         }
-        // dfs 호출
-        buildWalls(0, lab);
-        System.out.println(result);
+        
+        // 1. 벽을 세우고 (완전 탐색 : 모든 경우의 조합 고려)
+        build(0, 0, lab, 0) ; 
+        System.out.println(max); 
     }
     
-    // 깊이 우선 탐색(DFS)을 이용해 울타리를 설치하면서, 매 번 안전 영역의 크기 계산
-    public static void buildWalls(int count, int[][] lab) {
-    	
-        // 울타리가 3개 설치된 경우 (종료조건)
-        if (count == 3) {   	
-        	int[][] virusLab = new int[n][m] ; 
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                	virusLab[i][j] = lab[i][j];
-                }
+    public static void build(int x, int y, int[][] lab, int count){
+        if(count == 3){
+            // int[][] newLab = Arrays.copyOf(lab) ; --> copyOf 메소드는 1차원 배열에서만 사용 가능
+            /*
+            [복사 해야하는 이유] 
+            배열은 객체의 '참조 값'을 넘겨주는 것이기 때문에 
+            메서드 매개변수로 넘어왔더라도 참조하는 실제값을 변경한다.
+            즉, 바이러스 퍼지는건 복구 로직이 없기때문에 새로운 배열로 처리해주어야한다.
+            (벽 세우기는 복구를 해주기 때문에 원조 배열을 사용해도 괜찮다.)
+            */
+            // **2차원 배열복사방법 기억**
+            int[][] newLab = new int[N][M] ; 
+            for(int i = 0 ; i < N ; i++){
+                newLab[i] = lab[i].clone() ; 
             }
-            // 각 바이러스의 위치에서 전파 진행
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    if (virusLab[i][j] == 2) {
-                        virus(i, j, virusLab);
+        
+            for(int i = 0 ; i < N ; i++){
+                for(int j = 0 ; j < M ; j++){
+                    if(newLab[i][j] == 2){
+                        spread(i, j, newLab) ; 
                     }
-                }
+                } 
             }
-            // 안전 영역의 최대값 계산
-            result = Math.max(result, getScore(virusLab));
-            return;
+            count(newLab) ; 
+            return ; 
         }
         
-        // 빈 공간에 울타리를 설치
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (lab[i][j] != 0) {
+        for(int i = 0 ; i < N ; i++){
+            for(int j = 0 ; j < M ; j++){
+                if(lab[i][j] == 0){
+                    lab[i][j] = 1 ; 
+                    build(i, j, lab, count+1) ; 
+                    lab[i][j] = 0 ; 
+                }
+            } 
+        }
+    } 
+    
+    // 2. 바이러스 퍼지기 (Bfs)
+    public static void spread(int x, int y, int[][] newLab){
+        int[] dx = {-1, 1, 0, 0} ;
+        int[] dy = {0, 0, -1, 1} ;
+        
+        /*
+        BFS
+        *//*
+        Queue<int[]> q = new LinkedList<>() ; 
+        q.offer(new int[]{x,y}) ; 
+        
+        while(!q.isEmpty()){
+            int[] start = q.poll() ; 
+            for(int i = 0 ; i < 4 ; i++){
+                int nx = start[0] + dx[i];
+                int ny = start[1] + dy[i];
+                
+                if(nx < 0 || nx >= N || ny < 0 || ny >= M)
                     continue ; 
+                if(newLab[nx][ny]==0){
+                    newLab[nx][ny] = 2; 
+                    q.offer(new int[]{nx, ny}) ; 
                 }
-                lab[i][j] = 1;
-                count += 1;
-                buildWalls(count, lab);
-                    
-                lab[i][j] = 0;
-                count -= 1;
             }
-        }
-    } // dfs
-    
-    // 깊이 우선 탐색(DFS)을 이용해 각 바이러스가 사방으로 퍼지도록 하기
-    public static void virus(int x, int y, int[][] virusLab) {
-    	
-    	// 4가지 이동 방향에 대한 배열
-        int[] dx = {-1, 0, 1, 0};
-        int[] dy = {0, 1, 0, -1};
-        
-        for (int i = 0; i < 4; i++) {
-            int nx = x + dx[i];
+        } */
+        /*
+        DFS
+        */
+        for(int i = 0 ; i < 4 ; i++){
+            int nx = x + dx[i] ;
             int ny = y + dy[i];
-            // 상, 하, 좌, 우 중에서 바이러스가 퍼질 수 있는 경우
-            if (nx >= 0 && nx < n && ny >= 0 && ny < m) {
-                if (virusLab[nx][ny] == 0) {
-                    // 해당 위치에 바이러스 배치하고, 다시 재귀적으로 수행
-                	virusLab[nx][ny] = 2;
-                    virus(nx, ny, virusLab);
-                }
+                
+            if(nx < 0 || nx >= N || ny < 0 || ny >= M)
+                continue ; 
+            if(newLab[nx][ny] == 0){
+                newLab[nx][ny] = 2;
+                spread(nx, ny,newLab) ; 
             }
+            
         }
-    } // virus
+    }
     
-    // 현재 맵에서 안전 영역의 크기 계산하는 메서드
-    public static int getScore(int[][] virusLab) {
-        int score = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (virusLab[i][j] == 0) {
-                    score += 1;
+    // 3. 안전영역 센 후 최대값 갱신 
+    public static void count(int[][] newLab){
+        int answer = 0 ; 
+        for(int i = 0 ; i < N ; i++){
+            for(int j = 0 ; j < M ; j++){
+                if(newLab[i][j] == 0){
+                    answer++ ; 
                 }
-            }
+            } 
         }
-        return score;
-    } // getScore 
+        max = Math.max(answer , max) ; 
+    }
 }
