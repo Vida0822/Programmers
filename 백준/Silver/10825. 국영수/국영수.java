@@ -38,15 +38,25 @@ class Student implements Comparable<Student>{
     @Override
     public int compareTo(Student other){
         if(this.kor != other.kor)
-            return other.kor - this.kor ; 
+            // 내림차순 
+            return other.kor - this.kor ;  // Integer.compare(other.kor , this.kor ) ; 
         
         if(this.eng != other.eng)
-            return this.eng - other.eng ; 
+            // 오름차순
+            return this.eng - other.eng ;  // Integer.compare(this.kor, this.kor) ; 
         
         if(this.mat != other.mat)
-            return other.mat - this.mat ; 
+            // 내림차순
+            return other.mat - this.mat ;  // Integer.compare(other.mat, this.mat) ; 
         
+        // 오름차순
         return this.name.compareTo(other.name);
+        
+        /*
+        compare 기본 메서드(static)
+        * int --> Integer.compare  --> static 
+        * String --> s1.compareTo() --> instance
+        */
         
     }
 }
