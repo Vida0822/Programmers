@@ -5,9 +5,11 @@ for _ in range(N) :
     
 # greedy : 높은 금액의 동전 사용할 수록 good
 count = 0 
-while K > 0 : 
-    count += K//A[N-1]
-    K -= (K//A[N-1])*A[N-1]
-    N -= 1 
+# while K > 0 : 
+for i in reversed(range(N)) : 
+    count += K//A[i]
+#    K -= (K//A[N-1])*A[N-1]
+    K %= A[i]
+#    N -= 1 
        
 print(count)    
