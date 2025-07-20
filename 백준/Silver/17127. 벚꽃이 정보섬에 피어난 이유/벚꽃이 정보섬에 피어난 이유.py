@@ -1,0 +1,15 @@
+import math 
+
+N = int(input()) 
+A = list(map(int, input().split()))
+
+# 완전 탐색 ? 4개로 나누는 조합을 모두 구하고, 가장 큰 값을 반환 
+# N이 10 이하이기 때문에 가능 
+ans = 0 
+for i in range(1, N-2) : 
+    for j in range(i+1, N-1) : 
+        for k in range(j+1, N) : # N-2  
+            ans = max(ans, math.prod(A[:i]) + math.prod(A[i:j]) + math.prod(A[j:k]) + math.prod(A[k:]))
+                
+print(ans)
+
