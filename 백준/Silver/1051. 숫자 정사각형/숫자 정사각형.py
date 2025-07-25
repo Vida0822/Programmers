@@ -7,11 +7,12 @@ for _ in range(N) :
 memo = [-1 for i in range(10)] # i가 적혀있는 정사각형 중 최대 변 길이
 
 # 직사각형의 각 칸을 이동하면서
-for x in range(N) :
+# O(N^2) x O(N) --> O(50^3) : 125000
+for x in range(N) :  # O(N^2)
     for y in range(M) :
 
         # 해당 칸에서 정사각형을 하나씩 키우면서 만듬 (변이 직사각형 끝에 닿을때까지) 
-        for i in range(min(N-x, M-y)):
+        for i in range(min(N-x, M-y)): # O(N)
             nx = x + i
             ny = y + i
 
