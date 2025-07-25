@@ -1,5 +1,3 @@
-import math 
-
 N = int(input())
 A = [float(input()) for _ in range(N)]
 
@@ -14,11 +12,19 @@ A = [float(input()) for _ in range(N)]
 #print(round(max_v, 4) )
 
 #2. DP 
-for i in range(1, N) : 
-    A[i] = max(A[i], A[i] * A[i-1]) 
+# for i in range(1, N) : 
+#    A[i] = max(A[i], A[i] * A[i-1]) 
     # A[i] : i까지 포함하는 수열의 최대곱
     #        --> 이전 항을 포함하는 최대수열*해당항 vs 해당항부터 시작 
 
-print('%0.3f' % max(A))
+# print('%0.3f' % max(A))
 
-
+# 3. two-pointer 사용한 범위 지정
+# O(N^2)
+ans = 0
+for i in range(N):
+    mul = 1.0
+    for j in range(i, N):
+        mul *= A[j]
+        ans = max(ans, mul)
+print(f'{ans:.3f}')
