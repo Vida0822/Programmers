@@ -1,32 +1,31 @@
+"""
+강사님 코드
+"""
+from collections import deque
 
-# 1. 초기 필요한 자료형 선언
+def bfs(s, e) :
+    q = deque() # 시간 up !
+#    v = [0]*(e+1) -- > 메모리 초과
+#    v = []  # 리스트 방문 표시(동적), 체크 O(N) --> 시간 초과
+    v = set() # set 방문 표시, 체크 O(1)
+
+    # 초기값
+    q.append((s, 1))
+    v.add(s) # set으로 방문 표시
+
+    while q:
+        c, dist = q.popleft()
+        if c == e :
+            return dist 
+
+        for n in ((c*2, c*10+1)) :
+            # 범위내 미방문 (조건)
+            if n <= e and n not in v: # visited 확인 : O(N) => set 사용
+                # v[n] = v[c]+1
+                q.append((n, dist+1))
+                v.add(n)
+    else :
+        return -1
+
 A, B = map(int, input().split())
-q = []
-V = []
-
-# 2. 시작
-q.append((A, 0)) # data, depth,
-
-# 2. 그래프 만들면서 탐색 (depth 자체가 최단 거리)
-# depth_min = [[A]]
-while q :
-    data, depth = q.pop(0)
-
-    # 종료 조건 1. B를 찾음
-    if data == B :
-        print(depth+1)
-        break
-
-    # 자식 노드 추가
-    left, right = data * 2, int(str(data) + '1')
-    if left <= B :
-        q.append((left, depth + 1))
-    if right <= B :
-        q.append((right, depth + 1))
-
-    # if len(depth_min) <= depth+1 :
-    #     depth_min.append([B+1])
-    # depth_min[depth+1][0] = min(left, depth_min[depth+1][0])
-
-else:
-    print(-1)
+print(bfs(A, B))
