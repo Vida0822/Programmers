@@ -1,13 +1,13 @@
 def dfs(n, sm, v):
     global ANS
+    
+    # 가지 치기 (debug) --> 가장 위에
+    if sm > ANS :
+        return
 
     # [0] 종료 조건
     if n == N:
         ANS = min(ANS, sm)
-        return
-
-    # 가지 치기 (debug)
-    if sm > ANS :
         return
 
     # [1] 재귀 호출
