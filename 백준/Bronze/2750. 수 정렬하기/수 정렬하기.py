@@ -1,22 +1,30 @@
-N = int(input()) 
+def dfs(lst):
 
-nums = []
-for i in range(N) : 
-    nums.append(int(input()))
+    # [0] 종료 조건
+    if not lst : # debug : pop from empty list --> left, right가 빈 리스트일 때 아래애서 그냥 pop을 시도
+        return []
+    if len(lst) == 1:
+        return [lst.pop()]
 
-# 1. Bubble sort : 이웃끼리 비교 --> O(N^2)
+    # [1] 단위 작업
+    piv = lst.pop()
+    left = []
+    right = []
 
-                
-# 2. Selection Sort : 최소값을 찾고 맨앞으로 보내기 
-for i in range(N-1) :
-    mindex = i  
-    for j in range(i, N) : 
-        if nums[j] < nums[mindex] : 
-            mindex = j 
-    nums[i],nums[mindex] = nums[mindex],nums[i]     
+    for l in lst:
+        if l <= piv :
+            left.append(l)
+        else:
+            right.append(l)
+
+    # [2] 재귀 호출 
+    return dfs(left) + [piv] + dfs(right)
 
 
-# 3. Inserstion Sort
+N = int(input())
+A = [int(input()) for _ in range(N)]
+ans = dfs(A)
 
-for n in nums : 
-    print(n)
+for a in ans:
+    print(a)
+
