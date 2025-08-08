@@ -7,10 +7,10 @@ def cut(m, H):
 
 N, M = map(int, input().split())
 H = list(map(int, input().split()))
+# H.sort() --> 정렬 필요 없음 : 탐색 대상이 나무 배열 자체가 아닌 자르는 상한선이기 때문
 
 # 이진탐색
-H.sort() # 정렬,,,계속 까먹음 ㅠㅠ
-s, e, ans = 0, H[-1], H[-1]
+s, e, ans = 0, max(H), 0
 while s <= e:
     m = (s+e)//2
 
