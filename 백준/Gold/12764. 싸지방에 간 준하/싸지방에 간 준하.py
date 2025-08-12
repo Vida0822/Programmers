@@ -1,3 +1,7 @@
+"""
+2. heapq로 활용 : 남는 컴퓨터있는지 순차탐색하는 부분 수정
+"""
+
 from heapq import heappush, heappop
 
 N = int(input())
@@ -27,4 +31,5 @@ for s, e in lst:
 
     heappush(busy, [e, com])
 
-print(len(ans), *ans)
+print(len(ans))
+print(*ans)
