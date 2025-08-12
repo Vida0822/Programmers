@@ -1,15 +1,17 @@
-N, K = map(int, input().split()) 
-A = []
-for _ in range(N) : 
-    A.append(int(input()))
-    
-# greedy : 높은 금액의 동전 사용할 수록 good
-count = 0 
-# while K > 0 : 
-for i in reversed(range(N)) : 
-    count += K//A[i]
-#    K -= (K//A[N-1])*A[N-1]
+"""
+그리디 keypoint
+1. 반례
+2. 정렬
+"""
+
+N, K = map(int, input().split())
+A = [int(input()) for _ in range(N)] # 이미 정렬되어있음
+
+ANS = 0
+for i in range(N-1, -1, -1):
+    ANS += K//A[i]
     K %= A[i]
-#    N -= 1 
-       
-print(count)    
+
+print(ANS)
+
+
