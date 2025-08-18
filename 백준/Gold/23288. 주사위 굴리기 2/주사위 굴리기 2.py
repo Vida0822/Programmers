@@ -13,35 +13,20 @@ def move(ci, cj, cd):
 def roll(cd): # 주사위 상태 변경
     # 1(왼쪽, 서)
     if cd == 1:
-        t = dice[3]
-        dice[3] = dice[4]
-        dice[4] = dice[1]
-        dice[1] = dice[5]
-        dice[5] = t
+        dice[3], dice[4], dice[1], dice[5] = dice[4], dice[1], dice[5], dice[3]
+        # Refactoring: 리스트도 자동 변환... 된다!
 
     # 2 (위쪽, 북)
     elif cd == 2 :
-        t = dice[0]
-        dice[0] = dice[1]
-        dice[1] = dice[2]
-        dice[2] = dice[3]
-        dice[3] = t
+        dice[0], dice[1], dice[2], dice[3] = dice[1], dice[2], dice[3], dice[0]
 
     # 3 (오른쪽, 동)
     elif cd == 3 :
-        t = dice[3]
-        dice[3] = dice[5]
-        dice[5] = dice[1]
-        dice[1] = dice[4]
-        dice[4] = t
+        dice[3], dice[5], dice[1], dice[4] = dice[5], dice[1], dice[4], dice[3]
 
     # 4 (아래쪽, 남)
     elif cd == 4:
-        t = dice[3]
-        dice[3] = dice[2]
-        dice[2] = dice[1]
-        dice[1] = dice[0]
-        dice[0] = t
+        dice[0], dice[1], dice[2], dice[3] = dice[3], dice[0], dice[1], dice[2]
 
 
 def score(si, sj):
