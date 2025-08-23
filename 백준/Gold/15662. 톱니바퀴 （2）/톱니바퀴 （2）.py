@@ -14,7 +14,7 @@ K = int(input())
 
 # 2. 시뮬레이션 실행 (회전)
 for _ in range(K):
-    tlst = []
+    tlst = [] # 이번 턴에 회전시킬 톱니 (톱니번호, 방향)
 
     idx, rot = map(int, input().split())
     tlst.append((idx, 0))
@@ -22,6 +22,7 @@ for _ in range(K):
     # 1) 왼쪽 톱니 검사
     for i in range(idx-1, 0, -1):
         if arr[i][(top[i]+2)%8] != arr[i+1][(top[i+1]+6)%8]:
+            # 현재 top idx에서 2번째 위치한 돌기(arr에서 참조) != 현재 top idx에서 6번째 위치한 돌기 (arr에서 참조)
             tlst.append((i, (idx-i)%2)) # 나랑 위치가 짝수배 차이나면 같은 방향
         else:
             break # 중간에 멈추면 그 이후 는 회전 X
@@ -34,6 +35,7 @@ for _ in range(K):
             break
 
     # 3) 회전시키기 (시계방향이면 idx에서 -1, 반시계면 idx에서 +1)
+    #   --> 톱니의 전체 상태를 변경하는게 아닌 맨 위에 오는 돌기 idx만 갱신
     for t, d in tlst:
         if d == 0 : # 같은 방향
             top[t] = (top[t] - rot) % 8 # 시계면 -1, 반시계면 +1 됨
