@@ -5,6 +5,10 @@
 
 - R : N <= M
 - C : M > M
+- time <= 100 (DEBUG)
+=> '시간이 100초가 지나면 break'....
+그럼 time >= 100 이 아니라 time > 100이잖아 바보야..
+=> 이런 조건은 무조건 수식으로 써놓자....
 
 '''
 
@@ -65,7 +69,7 @@ N, M = 3, 3
 time = 0
 while True:
     # 종료 조건
-    if time > 100 : # 수정
+    if time > 100 :
         break
     if 0 <= r-1 < N and 0 <= c-1 < M and A[r-1][c-1] == k:
         break
