@@ -1,125 +1,140 @@
 """
-조건
-- NxN
+1차 시도
+최단 거리를 구해야하는 상황이 여러개
+=> 최대한 bfs 로직을 공통으로 빼고, 리턴값을 visited로해 상황에 맞게 활용
+=> 시간 초과나면... BFS 하는중에 최소값 갱신하고 그걸 리턴하는 로직으로 재구성....
 
-접근 방법
-1. 모든 손님까지의 최단 거리 구하기 (완탐으로 찾고 -> 각각 BFS)
-2. 그 중 가장 가까운 손님 반환 (거리 -> 행 -> 열 기준)
-3. 택시 이동 -> 연료 (-)
-4. 그 손님의 도착지까지 최단 거리 구하기
-5. 택시 이동 -> 연료 (-) -> 연료 (+)
+* 유의할 상태값 : 연료 --> 중간 중간 체크
 
+종료 조건
+1. 이동 도중에 연료가 바닥나서 다음 출발지나 목적지로 이동할 수 없으면
+2. 모든 손님을 이동시킬 수 없는 경우에도 -1을 출력
+--> 결국 1번이랑 2번은 같은 조건 아닌가... ?
+
+문제: 사람들의 si, sj -> ei, ej 연결......
+
+2차시도 
+set&map 활용 디버깅 실패... 비효율적이라도 그냥 v기준 사람들 list 정렬
 """
+
 from collections import deque
-import sys
-input = sys.stdin.readline
 
 # [0]
-N, M, F = map(int, input().split())
+N, M, L = map(int, input().split())
 arr = [list(map(int, input().split())) for _ in range(N)]
 ti, tj = map(int, input().split())
-ti -= 1
-tj -= 1
+ti, tj = ti-1, tj-1 # DEBUG: 계속 이거 빼주는거 빼먹는다
 
 people = []
-for _ in range(M):
+for _ in range(M) :
     si, sj, ei, ej = map(int, input().split())
-    people.append((si-1, sj-1, ei-1, ej-1)) # DEBUG: 계속 패딩 안하는데 문제에서 입력하는 좌표에서 1 안빼줌
-    # si, sj, ei, ej
+    people.append((si-1, sj-1, ei-1, ej-1))
+# people_arr = [[0]*N for _ in range(N)]
+# people_set = set()
+# for idx in range(M):
+#     si, sj, ei, ej = map(int, input().split())
+#     people_set.add((si-1, sj-1)) # DEBUG: -1 해주는거 계속 까먹는다...
+#     people_arr[si-1][sj-1] = (ei-1, ej-1)
+
 debug = 0
 
+Exception
 # [1]
-def bfs(si, sj):
-    """
-    그냥 모든 칸으로의 최단 거리를 구하는 함수
-    (최단 거리 손님 찾기, 도착지 찾기 로직 통일하기 위해 그냥 v 배열 반환)
-    :return: v
-    """
+def oob(ni, nj):
+    return not (0 <= ni < N and 0 <= nj < N)
+
+# def find_min_person(v):
+#     mn = (-1, -1, 400)
+#     changed = False
+#     for i in range(N):
+#         for j in range(N) :
+#             if (i, j) in people_set:
+#                 if v[i][j] < mn[2] and v[i][j] != -1 : # DEBUG) 조건 추가: 이동 불가능
+#                     changed = True
+#                     mn = (i, j, v[i][j])
+#     if not changed: # DEBUG : 데리러갈 수  있는 손님이 없을 때 이상한 값이 반환돼서 key error 발생
+#         return None
+#     else:
+#         return mn
+    # return mn
+
+def bfs(si, sj) :
+    '''
+    단순히 모든 좌표로의 최단 거리를 구하는 함수 (여러 상황에서 호출함을 대비)
+    :param si, sj:
+    :return: visited 배열
+    '''
     # [0]
     q = deque()
-    v = [[0]*N for _ in range(N)]
+    v = [[-1]*N for _ in range(N)] # DEBUG : 거리 정보 정확성 위해 0대신 -1로 채워줌
 
     # [1]
     q.append((si, sj))
-    v[si][sj] = 1
+    v[si][sj] = 0
 
     # [2]
-    while q :
+    while q:
         ci, cj = q.popleft()
 
-        for di, dj in ((-1 ,0), (0, -1), (0, 1), (1, 0)) :
+        for di, dj in ((-1, 0), (0, -1), (0, 1), (1, 0)):
             ni, nj = ci+di, cj+dj
 
-            if not (0 <= ni < N and 0 <= nj < N):
+            # 범위밖
+            if oob(ni, nj):
                 continue
-            if v[ni][nj] or arr[ni][nj]: # 방문 or 벽
+            # 벽
+            if arr[ni][nj]:
                 continue
-
-            v[ni][nj] = v[ci][cj] + 1
+            # 방문 --> DEBUG : 계속 이거 빼먹는다...
+            if v[ni][nj] != -1:
+                continue
+            # 이동 가능
+            v[ni][nj] = v[ci][cj]+1
             q.append((ni, nj))
 
     return v
 
+def solve(L):
+    # global L
+    global ti, tj
 
-def find(ti, tj):
-    '''
-    최단 거리 손님을 찾는 함수
-    :param ti, tj: 택시 출발 위치
-    :return: 최단 거리 손님 정보 (출발지, 도착지, 거리)
-    '''
-    # 현재 칸에서 모든 칸으로의 최단 거리 구하기
-    v = bfs(ti, tj)
-    # 해당 거리 자체를 기준으로 사람들 정렬  (1. 거리순, 2. 행순 , 3. 열순)
-    people.sort(key=lambda p: (-v[p[0]][p[1]], -p[0], -p[1]))
-    # 태울 손님 결정
-    si, sj, ei, ej = people.pop()
-    d = v[si][sj]-1 # DEBUG : 거리 자체는 v 배열에서 1 빼서 반환해야함 !!!
+    for _ in range(M):
+        # 1. 최단 거리 승객 찾기
+        v = bfs(ti, tj)
+        # for p in people:
+        #     print(*p)
+        people.sort(key=lambda p: (-v[p[0]][p[1]], -p[0], -p[1])) # 수정 필요...
 
-    return si, sj, ei, ej, d
+        si, sj, ei, ej = people.pop()
+        cnt = v[si][sj]
+        debug = 1
 
+        # 2. 택시 이동 (상태값 체크)
+        if cnt == -1 : # 가로 막혀서 이동 불가
+            return -1
+        if L < cnt: # 연료 없어서 이동 불가
+            return -1
+        else: # 이동 가능
+            L -= cnt # 연료 감소
+            ti, tj = si, sj  # 실제 이동
+        debug = 2
 
-def go():
-    global ti, tj, F
-    debug = 'S'
-    # 1. 태울 최단 거리 손님 찾기
-    si, sj, ei, ej, dist = find(ti, tj)
-    debug = 1
+        # 3. 승객 -> 도착지 이동 (상태값 체크)
+        # pi, pj = people_arr[si][sj]
+        v = bfs(si, sj)
+        cnt = v[ei][ej]
 
-    # 2. 택시 -> 손님 이동
-    if dist == -1 :
-        return False
-    if F >= dist:
-        F -= dist
-    else:
-        return False
-    debug = 2
+        if cnt == -1: # 가로 막혀서 이동 불가
+            return -1
+        if L < cnt: # 연료 없어서 이동 불가
+            return -1
+        else:  # 이동 가능
+            L += cnt # '승객을 태워 이동하면서 소모한 연료' 양의 두 배가 충전
+            ti, tj = ei, ej # 이동
+            # people_arr[pi][pj] = 0 # 도착지 map에서 삭제
+        debug = 3
 
-    # 3. 손님 -> 도착지 이동
-    v = bfs(si, sj)
-    dist = v[ei][ej] -1
-    debug = 3
-    if dist == -1 :
-        return False
-    if F >= dist:
-        # F -= dist
-        # F += dist*2
-        F += dist
-    else:
-        return False
-    ti, tj = ei, ej
-    debug = 4
-    return True
-
-
-# 모든 손님에 대해 운전 시도하기
-for _ in range(M) :
-    if not go():
-        F = -1
-        break
+    return L
 
 # [2]
-print(F)
-
-
-
-
+print(solve(L))
