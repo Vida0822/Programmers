@@ -13,8 +13,10 @@
 
 문제: 사람들의 si, sj -> ei, ej 연결......
 
-2차시도 
-set&map 활용 디버깅 실패... 비효율적이라도 그냥 v기준 사람들 list 정렬
+
+EDGE
+- 택시와 승객이 같은 위치에 서 있으면 그 승객까지의 최단거리는 0이다.
+
 """
 
 from collections import deque
@@ -25,42 +27,32 @@ arr = [list(map(int, input().split())) for _ in range(N)]
 ti, tj = map(int, input().split())
 ti, tj = ti-1, tj-1 # DEBUG: 계속 이거 빼주는거 빼먹는다
 
-people = []
-for _ in range(M) :
+people_set = set() # 출발지
+people_arr = [[0]*N for _ in range(N)] # 도착지
+for idx in range(M):
     si, sj, ei, ej = map(int, input().split())
-    people.append((si-1, sj-1, ei-1, ej-1))
-# people_arr = [[0]*N for _ in range(N)]
-# people_set = set()
-# for idx in range(M):
-#     si, sj, ei, ej = map(int, input().split())
-#     people_set.add((si-1, sj-1)) # DEBUG: -1 해주는거 계속 까먹는다...
-#     people_arr[si-1][sj-1] = (ei-1, ej-1)
+    people_set.add((si-1, sj-1)) # DEBUG: -1 해주는거 계속 까먹는다...
+    people_arr[si-1][sj-1] = (ei-1, ej-1)
 
 debug = 0
 
-Exception
 # [1]
 def oob(ni, nj):
     return not (0 <= ni < N and 0 <= nj < N)
 
-# def find_min_person(v):
-#     mn = (-1, -1, 400)
-#     changed = False
-#     for i in range(N):
-#         for j in range(N) :
-#             if (i, j) in people_set:
-#                 if v[i][j] < mn[2] and v[i][j] != -1 : # DEBUG) 조건 추가: 이동 불가능
-#                     changed = True
-#                     mn = (i, j, v[i][j])
-#     if not changed: # DEBUG : 데리러갈 수  있는 손님이 없을 때 이상한 값이 반환돼서 key error 발생
-#         return None
-#     else:
-#         return mn
-    # return mn
+def find_min_person(v):
+    mn = (-1, -1, 400) # <후보 1>
+    for i in range(N):
+        for j in range(N) : # 전체 좌표 완탐
+            if (i, j) in people_set:
+                if v[i][j] < mn[2] and v[i][j] != -1 : # DEBUG) 조건 추가: 이동 불가능
+                    mn = (i, j, v[i][j]) # 약간 애매 !
+    return mn
 
 def bfs(si, sj) :
     '''
     단순히 모든 좌표로의 최단 거리를 구하는 함수 (여러 상황에서 호출함을 대비)
+    -> 시간 초과나면..(택시 -> 승객, 승객 -> 도착지 각각 bfs...)
     :param si, sj:
     :return: visited 배열
     '''
@@ -101,37 +93,35 @@ def solve(L):
     for _ in range(M):
         # 1. 최단 거리 승객 찾기
         v = bfs(ti, tj)
-        # for p in people:
-        #     print(*p)
-        people.sort(key=lambda p: (-v[p[0]][p[1]], -p[0], -p[1])) # 수정 필요...
-
-        si, sj, ei, ej = people.pop()
-        cnt = v[si][sj]
+        debug = 0
+        si, sj, cnt = find_min_person(v) # 일단 완탐...(수정)
         debug = 1
 
         # 2. 택시 이동 (상태값 체크)
-        if cnt == -1 : # 가로 막혀서 이동 불가
+        if si == -1 and sj == -1 and cnt == 400:  # -1 : # 데리러 갈 수 있는 승객이 존재 X
             return -1
         if L < cnt: # 연료 없어서 이동 불가
             return -1
         else: # 이동 가능
             L -= cnt # 연료 감소
             ti, tj = si, sj  # 실제 이동
+            people_set.remove((si, sj)) # 출발지 set에서 삭제
         debug = 2
 
         # 3. 승객 -> 도착지 이동 (상태값 체크)
-        # pi, pj = people_arr[si][sj]
-        v = bfs(si, sj)
+        ei, ej = people_arr[si][sj]
+        v = bfs(ti, tj)
         cnt = v[ei][ej]
+        debug = 3
 
-        if cnt == -1: # 가로 막혀서 이동 불가
+        if cnt == -1 : # 가로 막혀서 이동 불가
             return -1
-        if L < cnt: # 연료 없어서 이동 불가
+        if L < cnt : # 연료 없어서 이동 불가
             return -1
         else:  # 이동 가능
             L += cnt # '승객을 태워 이동하면서 소모한 연료' 양의 두 배가 충전
             ti, tj = ei, ej # 이동
-            # people_arr[pi][pj] = 0 # 도착지 map에서 삭제
+            people_arr[si][sj] = 0 # 도착지 map에서 삭제
         debug = 3
 
     return L
