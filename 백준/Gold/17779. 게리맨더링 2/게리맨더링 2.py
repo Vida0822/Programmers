@@ -51,13 +51,13 @@ def cal(si, sj, d1, d2):
                 break
             alst[1] += arr[i][j]
             # test[i][j] = 2
-    for i in range(si+d1, N):  # si+d1 포함
+    for i in range(N-1, si+d1-1, -1):  # si+d1 포함
         for j in range(sj-d1+d2): # sj-d1+d2 미포함
             if v[i][j] == 1:
                 break
             alst[2] += arr[i][j]
             # test[i][j] = 3
-    for i in range(si+d2+1, N): # si+d2 미포함
+    for i in range(N-1, si+d2, -1): # si+d2 미포함
         for j in range(N-1, sj-d1+d2-1, -1): # sj-d1+d2 포함
             if v[i][j] == 1:
                 break
